@@ -21,7 +21,7 @@ func getSliceLength(slice []interface{}) (int, error) {
 		}
 		totalLength += length
 	}
-	return totalLength, nil
+	return totalLength + protoCharLen, nil
 }
 
 func getStringLength(str interface{}) (int, error) {
@@ -31,12 +31,26 @@ func getStringLength(str interface{}) (int, error) {
 	case int:
 		return len(strconv.Itoa(v)) + protoCharLen, nil
 	case []interface{}:
-		sliceLen, err := getSliceLength(v)
-		if err != nil {
-			return invalidLen, err
-		}
-		return sliceLen + protoCharLen, nil
+		return getSliceLength(v)
+	case map[string]interface{}:
+		return getMapLength(v)
 	default:
 		return invalidLen, errGetString
 	}
+}
+
+func getMapLength(v map[string]interface{}) (int, error) {
+	mapLen := 0
+	for key, value := range v {
+		valueLen, err := getStringLength(value)
+		if err != nil {
+			return invalidLen, err
+		}
+		keyLen, err := getStringLength(key)
+		if err != nil {
+			return invalidLen, err
+		}
+		mapLen = mapLen + valueLen + keyLen
+	}
+	return mapLen + protoCharLen, nil
 }

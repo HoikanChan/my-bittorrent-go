@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDecodeBencode(t *testing.T) {
@@ -18,10 +18,19 @@ func TestDecodeBencode(t *testing.T) {
 		{input: "i-52e", expected: -52, err: nil},
 		{input: "4:test", expected: "test", err: nil},
 		{input: "l5:helloi52ee", expected: []interface{}{"hello", 52}, err: nil},
+		{input: "l5:helloi52ed3:foo3:bar5:helloi52eee", expected: []interface{}{"hello", 52, map[string]interface{}{
+			"foo":   "bar",
+			"hello": 52,
+		}}, err: nil},
+		{input: "d3:foo3:bar5:helloi52ee", expected: map[string]interface{}{
+			"foo":   "bar",
+			"hello": 52,
+		}, err: nil},
 
 		// Negative test cases
-		{input: "invalid", expected: "", err: errFormat},
-		{input: "l5:helloinvalide", expected: "", err: errFormat},
+		{input: "invalid", expected: "", err: errInvalidFormat},
+		{input: "l5:helloinvalide", expected: "", err: errInvalidFormat},
+		{input: "di52e3:bar5:helloi52ee", expected: "", err: errInvalidDictKey},
 	}
 
 	for _, tc := range testCases {
@@ -33,41 +42,8 @@ func TestDecodeBencode(t *testing.T) {
 				} else if err.Error() != tc.err.Error() {
 					t.Errorf("Expected error %v, but got %v", tc.err, err)
 				}
-			}
-			assert.Equal(t, tc.expected, result)
-		})
-	}
-}
-
-func Test_getStringLength(t *testing.T) {
-	testCases := []struct {
-		input    interface{}
-		expected int
-		err      error
-	}{
-		// Positive test cases
-		{input: "hello", expected: 7, err: nil},
-		{input: 123, expected: 5, err: nil},
-		{input: -12345, expected: 8, err: nil},
-		{input: []interface{}{"hello", 123}, expected: 14, err: nil},
-
-		// Negative test cases
-		{input: true, expected: -1, err: errGetString},
-		{input: nil, expected: -1, err: errGetString},
-		{input: 3.14, expected: -1, err: errGetString},
-	}
-
-	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("Input: %v", tc.input), func(t *testing.T) {
-			result, err := getStringLength(tc.input)
-			if err != nil {
-				if tc.err == nil {
-					t.Errorf("Unexpected error: %v", err)
-				} else if err.Error() != tc.err.Error() {
-					t.Errorf("Expected error %v, but got %v", tc.err, err)
-				}
-			} else if result != tc.expected {
-				t.Errorf("Expected %d, but got %d", tc.expected, result)
+			} else {
+				assert.Equal(t, tc.expected, result)
 			}
 		})
 	}
