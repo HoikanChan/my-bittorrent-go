@@ -13,8 +13,8 @@ func TestDecodeBencode(t *testing.T) {
 	}{
 		// Positive test cases
 		{input: "5:hello", expected: "hello", err: nil},
-		{input: "i123e", expected: "123", err: nil},
-		{input: "i-52e", expected: "-52", err: nil},
+		{input: "i123e", expected: 123, err: nil},
+		{input: "i-52e", expected: -52, err: nil},
 		{input: "4:test", expected: "test", err: nil},
 
 		// Negative test cases
