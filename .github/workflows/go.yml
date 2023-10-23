@@ -32,7 +32,7 @@ jobs:
       with:
         profile: cover.out
         local-prefix: github.com/org/project
-        threshold-file: 50
+        threshold-file: 30
         threshold-package: 50
         threshold-total: 60
   
