@@ -7,10 +7,6 @@ import (
 )
 
 const E = 'e'
-
-// Example:
-// - 5:hello -> hello
-// - 10:hello12345 -> hello12345
 var errInvalidFormat = fmt.Errorf("invalid format")
 var errInvalidPrefix = fmt.Errorf("invalid format prefix")
 var errInvalidDictKey = fmt.Errorf("invalid dict, key must be string")
@@ -18,6 +14,9 @@ var errEndOfFile = fmt.Errorf("file ended")
 var errNoEnd = fmt.Errorf("can not find end of list or map")
 var errInvalidNum = fmt.Errorf("invalid number")
 
+// Example:
+// - 5:hello -> hello
+// - 10:hello12345 -> hello12345
 func decodeBencode(bencodedString string) (interface{}, int, error) {
 	firstLetter := bencodedString[0]
 	switch firstLetter {

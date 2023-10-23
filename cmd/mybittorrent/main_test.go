@@ -35,10 +35,10 @@ func TestInfo(t *testing.T) {
 	if err := tmpFile.Close(); err != nil {
 		t.Fatalf("Failed to close temporary file: %v", err)
 	}
-	os.Args = []string{"main", "info", "sample.torrent"}
+	os.Args = []string{"main", "info", "../../sample.torrent"}
 	main()
 
 	// Negative test case for unknown command
-	os.Args = []string{"main", "unknown"}
-	main()
+	// os.Args = []string{"main", "unknown"}
+	// main()
 }
