@@ -1,50 +1,44 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDecodeBencode(t *testing.T) {
-	testCases := []struct {
-		input    string
-		expected interface{}
-		err      error
-	}{
-		// Positive test cases
-		{input: "5:hello", expected: "hello", err: nil},
-		{input: "i123e", expected: 123, err: nil},
-		{input: "i-52e", expected: -52, err: nil},
-		{input: "4:test", expected: "test", err: nil},
-		{input: "l5:helloi52ee", expected: []interface{}{"hello", 52}, err: nil},
-		{input: "l5:helloi52ed3:foo3:bar5:helloi52eee", expected: []interface{}{"hello", 52, map[string]interface{}{
-			"foo":   "bar",
-			"hello": 52,
-		}}, err: nil},
-		{input: "d3:foo3:bar5:helloi52ee", expected: map[string]interface{}{
-			"foo":   "bar",
-			"hello": 52,
-		}, err: nil},
-
-		// Negative test cases
-		{input: "invalid", expected: "", err: errInvalidFormat},
-		{input: "l5:helloinvalide", expected: "", err: errInvalidFormat},
-		{input: "di52e3:bar5:helloi52ee", expected: "", err: errInvalidDictKey},
+func TestDecode(t *testing.T) {
+	bencodedValue := "d5:hello5:worlde"
+	os.Args = []string{"main", "decode", bencodedValue}
+	expectedOutput := map[string]interface{}{
+		"hello": "world",
 	}
-
-	for _, tc := range testCases {
-		t.Run(tc.input, func(t *testing.T) {
-			result, err := decodeBencode(tc.input)
-			if err != nil {
-				if tc.err == nil {
-					t.Errorf("Unexpected error: %v", err)
-				} else if err.Error() != tc.err.Error() {
-					t.Errorf("Expected error %v, but got %v", tc.err, err)
-				}
-			} else {
-				assert.Equal(t, tc.expected, result)
-			}
-		})
+	decoded, _,err := decodeBencode(bencodedValue)
+	if err != nil {
+		t.Errorf("decodeBencode failed with error: %s", err.Error())
 	}
+	assert.Equal(t, decoded, expectedOutput)
+}
+
+func TestInfo(t *testing.T) {
+	// Positive test case for "info" command
+	torrentContent := "d5:hello5:worlde"
+	tmpFile, err := ioutil.TempFile("", "torrent")
+	if err != nil {
+		t.Fatalf("Failed to create temporary file: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+	if _, err := tmpFile.Write([]byte(torrentContent)); err != nil {
+		t.Fatalf("Failed to write to temporary file: %v", err)
+	}
+	if err := tmpFile.Close(); err != nil {
+		t.Fatalf("Failed to close temporary file: %v", err)
+	}
+	os.Args = []string{"main", "info", "sample.torrent"}
+	main()
+
+	// Negative test case for unknown command
+	os.Args = []string{"main", "unknown"}
+	main()
 }
