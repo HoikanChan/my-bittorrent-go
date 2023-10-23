@@ -1,3 +1,5 @@
+# bittorrent-go
+![coverage](https://raw.githubusercontent.com/HoikanChan/my-bittorrent-go/badges/.badges/main/coverage.svg)
 [![progress-banner](https://backend.codecrafters.io/progress/bittorrent/00204093-f0ca-4f92-9942-891d0c7155aa)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
 
 This is a starting point for Go solutions to the
