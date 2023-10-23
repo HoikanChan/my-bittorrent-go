@@ -19,9 +19,9 @@ Protocol, pipelining and more.
 - [x] Decode bencoded lists
 - [x] Decode bencoded dictionaries
 - [x] Parse torrent file
-- [] Calculate info hash
-- [] Piece hashes
-- [] Discover peers
-- [] Peer handshake
-- [] Download a piece
-- [] Download the whole file
+- [ ] Calculate info hash
+- [ ] Piece hashes
+- [ ] Discover peers
+- [ ] Peer handshake
+- [ ] Download a piece
+- [ ] Download the whole file
